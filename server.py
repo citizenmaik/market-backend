@@ -114,7 +114,7 @@ def api_indices():
 def api_performance():
     def fetch():
         try:
-            data = yf.download("SPY", period="2y", auto_adjust=True, progress=False)["Close"]
+            data = yf.download("SPY", period="y2", auto_adjust=True, progress=False)["Close"]
             price = float(data.iloc[-1])
             now   = datetime.now()
             ytd   = data[data.index.year == now.year]
@@ -148,14 +148,14 @@ def api_trend_status():
                 e21_s  = calc_ema(c, 21)
                 three  = all(float(c.iloc[-i]) > float(e21_s.iloc[-i]) for i in range(1, 4))
                 result[ticker] = {
-                    "9ema":       round((price-e9)  /e9  *100, 2),
-                    "21ema_high": round((price-e21) /e21 *100, 2),
-                    "21ema":      round((price-e21) /e21 *100, 2),
-                    "21ema_low":  round((price-e21) /e21 *100, 2),
-                    "3d_21ema":   three,
-                    "50ema":      round((price-e50) /e50 *100, 2),
-                    "200ema":     round((price-e200)/e200*100, 2),
-                    "52w_high":   round((price-h52) /h52 *100, 2),
+                    "ema9":       round((price-e9)  /e9  *100, 2),
+                    "ema21h": round((price-e21) /e21 *100, 2),
+                    "ema21":      round((price-e21) /e21 *100, 2),
+                    "ema21l":  round((price-e21) /e21 *100, 2),
+                    "d3ema21":   three,
+                    "ema50":      round((price-e50) /e50 *100, 2),
+                    "ema200":     round((price-e200)/e200*100, 2),
+                    "w52high":   round((price-h52) /h52 *100, 2),
                 }
             except Exception:
                 pass
@@ -172,12 +172,12 @@ def api_power_trend():
             sma200 = float(c.rolling(200).mean().iloc[-1])
             avg3   = float(c.tail(3).mean())
             return {
-                "3d_20sma":  avg3 > sma20,
-                "3d_50sma":  avg3 > sma50,
-                "3d_200sma": avg3 > sma200,
-                "20_50sma":  sma20 > sma50,
-                "20_200sma": sma20 > sma200,
-                "50_200sma": sma50 > sma200,
+                "sma3d20":  avg3 > sma20,
+                "sma3d50":  avg3 > sma50,
+                "sma3d200": avg3 > sma200,
+                "sma20_50":  sma20 > sma50,
+                "sma20_200": sma20 > sma200,
+                "sma50_200": sma50 > sma200,
             }
         except Exception as e:
             return {"error": str(e)}
@@ -244,8 +244,8 @@ def api_yields():
         try:
             data = yf.download(["^TNX","^IRX"], period="5d", auto_adjust=True, progress=False)["Close"]
             return {
-                "10y": round(float(data["^TNX"].dropna().iloc[-1]), 2),
-                "2y":  round(float(data["^IRX"].dropna().iloc[-1]), 2),
+                "y10": round(float(data["^TNX"].dropna().iloc[-1]), 2),
+                "y2":  round(float(data["^IRX"].dropna().iloc[-1]), 2),
             }
         except Exception:
             return {}
