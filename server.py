@@ -5,7 +5,6 @@ Deploy to Railway: https://railway.app
 """
 
 from flask import Flask, jsonify, request
-from flask_cors import CORS
 import yfinance as yf
 from datetime import datetime
 import time
@@ -13,7 +12,21 @@ import os
 import hashlib
 
 app = Flask(__name__)
-CORS(app, origins="*", allow_headers=["X-API-Key", "Content-Type"], methods=["GET", "OPTIONS"])
+
+@app.after_request
+def add_cors(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "X-API-Key, Content-Type"
+    response.headers["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+    return response
+
+@app.route("/api/<path:path>", methods=["OPTIONS"])
+def handle_options(path):
+    response = app.make_default_options_response()
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "X-API-Key, Content-Type"
+    response.headers["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+    return response
 
 # ── Auth ──────────────────────────────────────────────────────
 API_KEY = os.environ.get("DASHBOARD_API_KEY", "change-me-in-railway")
