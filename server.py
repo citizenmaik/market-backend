@@ -13,7 +13,7 @@ import os
 import hashlib
 
 app = Flask(__name__)
-CORS(app, origins="*")
+CORS(app, origins="*", allow_headers=["X-API-Key", "Content-Type"], methods=["GET", "OPTIONS"])
 
 # ── Auth ──────────────────────────────────────────────────────
 API_KEY = os.environ.get("DASHBOARD_API_KEY", "change-me-in-railway")
